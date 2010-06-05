@@ -1,0 +1,42 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.61.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 8903dea694131cc812e73c0b630972dd5e66eeac Changes
+SHA1 fa75c112b4dfb3e0f7ff67882a0dfce4c0cbc113 INSTALL
+SHA1 88cc1fbb3105e598a74e5897e44e3e57544c70b3 LICENSE
+SHA1 5ae2e36e8cd7ecd90e9c658507b2f0a6c168c4e1 MANIFEST
+SHA1 c473de32da8874976b8027eff7448453e85bf255 META.json
+SHA1 32ce5213c3c759c2c22fa0cfb44412e89eb7eb37 META.yml
+SHA1 bc5c6094ff1ab8e4f5ffb508b9734f5eef2b365d Makefile.PL
+SHA1 42049eaa74572a3284407193c86a75c936a63290 README
+SHA1 ad3e5b7356869d4bbc96223ad94084ae6e3b7b40 bin/kwiki2silki
+SHA1 cff6054ae8e877d0bde936e7a22c39d5a3fc32af dist.ini
+SHA1 29cec03e58ef8b5dc48f9ba8312a8d6eb17e34ba lib/SilkiX/Converter/Kwiki.pm
+SHA1 81f949d93309ca7f84737a492dc41f75acf8a9b0 lib/SilkiX/Converter/Kwiki/HTMLToWiki.pm
+SHA1 a29269211c2b27eec33861083aba30e3bd90e89c t/compile.t
+SHA1 8e6682349aa07cf148819d3363b28805321dcf40 t/release-eol.t
+SHA1 93797583dc7bfd6e98033c0d55f5692e5798dbf3 t/release-kwalitee.t
+SHA1 ac3b0d8532277d82b9e048ae618a32ef08868350 t/release-no-tabs.t
+SHA1 86e95d569ccbfa93bc3f3f2caa72bc922d84271d t/release-pod-coverage.t
+SHA1 ca237bfea8f1cec196ce2f96aa407004fd343b45 t/release-pod-spell.t
+SHA1 6a0afed86b0ba9549bb2228ae9880960781fea9d t/release-pod.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEARECAAYFAkwJw30ACgkQIgMCsV8qvRIR3wCeI/J0wbgQI5WaaHvgT3k/fmya
+4YUAoJCKOeMsC6JmB9BsB3zZgEZeGm5L
+=QHFM
+-----END PGP SIGNATURE-----
