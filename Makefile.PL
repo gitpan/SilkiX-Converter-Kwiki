@@ -22,7 +22,7 @@ my %WriteMakefileArgs = (
   'EXE_FILES' => [
     'bin/kwiki2silki'
   ],
-  'LICENSE' => 'perl',
+  'LICENSE' => 'artistic_2',
   'NAME' => 'SilkiX::Converter::Kwiki',
   'PREREQ_PM' => {
     'File::MimeInfo' => '0',
@@ -38,11 +38,11 @@ my %WriteMakefileArgs = (
     'MooseX::StrictConstructor' => '0',
     'Path::Class' => '0',
     'Scalar::Util' => '0',
-    'Silki' => '0.06',
+    'Silki' => '0.15',
     'URI::Escape' => '0',
     'namespace::autoclean' => '0'
   },
-  'VERSION' => '0.01',
+  'VERSION' => '0.02',
   'test' => {
     'TESTS' => 't/*.t'
   }

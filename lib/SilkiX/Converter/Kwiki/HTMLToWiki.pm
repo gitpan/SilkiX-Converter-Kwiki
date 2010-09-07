@@ -1,6 +1,6 @@
 package SilkiX::Converter::Kwiki::HTMLToWiki;
 BEGIN {
-  $SilkiX::Converter::Kwiki::HTMLToWiki::VERSION = '0.01';
+  $SilkiX::Converter::Kwiki::HTMLToWiki::VERSION = '0.02';
 }
 
 use strict;
@@ -123,16 +123,18 @@ __PACKAGE__->meta()->make_immutable();
 
 1;
 
+# ABSTRACT: Custom HTML to wiki conversion to do conversion from Kwiki
+
 __END__
 =pod
 
 =head1 NAME
 
-SilkiX::Converter::Kwiki::HTMLToWiki
+SilkiX::Converter::Kwiki::HTMLToWiki - Custom HTML to wiki conversion to do conversion from Kwiki
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 AUTHOR
 
@@ -140,10 +142,11 @@ version 0.01
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Dave Rolsky.
+This software is Copyright (c) 2010 by Dave Rolsky.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+This is free software, licensed under:
+
+  The Artistic License 2.0
 
 =cut
 

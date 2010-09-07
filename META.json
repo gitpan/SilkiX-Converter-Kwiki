@@ -4,11 +4,13 @@
       "Dave Rolsky <autarch@urth.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.101550",
-   "license" : "perl_5",
+   "generated_by" : "Dist::Zilla version 4.102340, CPAN::Meta::Converter version 2.101670",
+   "license" : [
+      "artistic_2"
+   ],
    "meta-spec" : {
-      "url" : "http://github.com/dagolden/cpan-meta/",
-      "version" : 2
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
    },
    "name" : "SilkiX-Converter-Kwiki",
    "prereqs" : {
@@ -19,28 +21,28 @@
       },
       "runtime" : {
          "requires" : {
-            "File::MimeInfo" : "0",
-            "File::Slurp" : "0",
-            "File::chdir" : "0",
-            "HTML::Tidy" : "0",
-            "JSON" : "0",
-            "Kwiki" : "0",
-            "Kwiki::Attachments" : "0",
-            "Moose" : "0",
-            "MooseX::Getopt" : "0",
-            "MooseX::SemiAffordanceAccessor" : "0",
-            "MooseX::StrictConstructor" : "0",
-            "Path::Class" : "0",
-            "Scalar::Util" : "0",
-            "Silki" : "0.06",
-            "URI::Escape" : "0",
-            "namespace::autoclean" : "0"
+            "File::MimeInfo" : 0,
+            "File::Slurp" : 0,
+            "File::chdir" : 0,
+            "HTML::Tidy" : 0,
+            "JSON" : 0,
+            "Kwiki" : 0,
+            "Kwiki::Attachments" : 0,
+            "Moose" : 0,
+            "MooseX::Getopt" : 0,
+            "MooseX::SemiAffordanceAccessor" : 0,
+            "MooseX::StrictConstructor" : 0,
+            "Path::Class" : 0,
+            "Scalar::Util" : 0,
+            "Silki" : "0.15",
+            "URI::Escape" : 0,
+            "namespace::autoclean" : 0
          }
       },
       "test" : {
          "requires" : {
             "Test::More" : "0.88",
-            "Test::Most" : "0"
+            "Test::Most" : 0
          }
       }
    },
@@ -56,6 +58,6 @@
          "web" : "http://hg.urth.org/hg/SilkiX-Converter-Kwiki"
       }
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }
 

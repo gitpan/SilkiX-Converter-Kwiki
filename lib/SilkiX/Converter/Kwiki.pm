@@ -1,6 +1,6 @@
 package SilkiX::Converter::Kwiki;
 BEGIN {
-  $SilkiX::Converter::Kwiki::VERSION = '0.01';
+  $SilkiX::Converter::Kwiki::VERSION = '0.02';
 }
 
 use strict;
@@ -53,6 +53,12 @@ has wiki_name => (
     is       => 'rw',
     isa      => 'Str',
     required => 1,
+);
+
+has fast => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
 );
 
 has _wiki => (
@@ -178,34 +184,40 @@ sub run {
 
     exit if $self->dump_page_titles() || $self->dump_usernames();
 
-    $self->_disable_pg_triggers();
+    $self->_disable_pg_triggers() if $self->fast();
 
-    for my $page (
-        map  { $_->[1] }
-        sort { $a->[0] <=> $b->[0] }
-        map {
-            my $order = $_->title() eq 'HomePage' ? 0 : 1;
-            [ $order, $_ ]
-        } $self->_kwiki()->hub()->pages()->all()
-        ) {
+    eval {
+        for my $page (
+            map  { $_->[1] }
+            sort { $a->[0] <=> $b->[0] }
+            map {
+                my $order = $_->title() eq 'HomePage' ? 0 : 1;
+                [ $order, $_ ]
+            } $self->_kwiki()->hub()->pages()->all()
+            ) {
 
+            $self->_convert_page($page);
+        }
 
-        $self->_convert_page($page);
-    }
+        $self->_enable_pg_triggers() if $self->fast();
 
-    $self->_enable_pg_triggers();
+        $self->_rebuild_searchable_text() if $self->fast();
 
-    $self->_rebuild_searchable_text();
+        for my $user (
+            grep { !$_->is_disabled() }
+            grep { blessed $_} values %{ $self->_user_map() }
+            ) {
 
-    for my $user (
-        grep { !$_->is_disabled() }
-        grep {blessed $_} values %{ $self->_user_map() }
-        ) {
+            $self->_wiki->add_user(
+                user => $user,
+                role => Silki::Schema::Role->Member(),
+            );
+        }
+    };
 
-        $self->_wiki->add_user(
-            user => $user,
-            role => Silki::Schema::Role->Member(),
-        );
+    if ( my $e = $@ ) {
+        $self->_enable_pg_triggers();
+        die $e;
     }
 }
 
@@ -559,8 +571,8 @@ sub _disable_pg_triggers {
 
     my $dbh = Silki::Schema->DBIManager()->default_source()->dbh();
 
-    $dbh->do( q{DROP TRIGGER ts_text_sync ON "Page"} );
-    $dbh->do( q{DROP TRIGGER page_revision_ts_text_sync ON "PageRevision"} );
+    $dbh->do( q{ALTER TABLE "Page" DISABLE TRIGGER USER} );
+    $dbh->do( q{ALTER TABLE "PageRevision" DISABLE TRIGGER USER} );
 }
 
 sub _enable_pg_triggers {
@@ -568,9 +580,8 @@ sub _enable_pg_triggers {
 
     my $dbh = Silki::Schema->DBIManager()->default_source()->dbh();
 
-    $dbh->do( q{CREATE TRIGGER ts_text_sync BEFORE UPDATE ON "Page" FOR EACH ROW EXECUTE PROCEDURE page_tsvector_trigger()} );
-
-    $dbh->do( q{CREATE TRIGGER page_revision_ts_text_sync AFTER INSERT ON "PageRevision" FOR EACH ROW EXECUTE PROCEDURE page_revision_tsvector_trigger()} );
+    $dbh->do( q{ALTER TABLE "Page" ENABLE TRIGGER USER} );
+    $dbh->do( q{ALTER TABLE "PageRevision" ENABLE TRIGGER USER} );
 }
 
 sub _rebuild_searchable_text {
@@ -589,12 +600,13 @@ SELECT pages.page_id,
                     FROM "PageRevision"
                    WHERE page_id = p.page_id )
             AND p.page_id = pr.page_id
-       ) AS pages;
+            AND p.wiki_id = ?
+       ) AS pages
 EOF
 
     my $dbh = Silki::Schema->DBIManager()->default_source()->dbh();
 
-    $dbh->do($sql);
+    $dbh->do( $sql, {}, $self->_wiki()->wiki_id() );
 }
 
 sub _debug {
@@ -610,10 +622,8 @@ sub _debug {
 {
     use Spoon::Hub;
 
-    package Spoon::Hub;
-BEGIN {
-  $Spoon::Hub::VERSION = '0.01';
-}
+    package
+        Spoon::Hub;
 
     no warnings 'redefine';
 
@@ -643,14 +653,15 @@ SilkiX::Converter::Kwiki - Convert a Kwiki wiki to a Silki wiki
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
   kwiki2silki --wiki           'Silki Wiki Title'   \
               --kwiki-root     /path/to/kwiki       \
               --user-map-file  /path/to/map.json    \
-              --default-user   DefaultNameFromKwiki
+              --default-user   DefaultNameFromKwiki \
+              --fast
 
   SILKIX_CONVERTER=MyCustomConversionSubclass \
     kwiki2silki --wiki           'Silki Wiki Title'   \
@@ -668,18 +679,19 @@ be used to do the conversion. This lets you create a custom subclass, which
 can be useful, especially when it comes to default values for users and for
 mapping page titles from Kwiki to Silki.
 
-=head1 WARNING
+=head1 WARNINGS
 
-The converter drops some database triggers in order to speed things up, and
-restores them at the end of the conversion. If the conversion stops mid-stream
-for any reason, your database will be in a very wonky state.
-
-The converter assumes that the wiki you're writing to is effectively
-empty. Don't try to convert into an already-in-use wiki!
+If you pass the C<--fast> option, the converter disables some database
+triggers in order to speed things up, and restores them at the end of the
+conversion. It attempts to restore them if the process fails mid-stream, but
+this is software, and software has bugs.
 
 If you have other wikis which are in use, make sure to backup your database
 with F<pg_dump>. Also, shut down the web UI during the conversion, or else
 other wikis could end up corrupted because of the missing triggers.
+
+The converter assumes that the wiki you're writing to is effectively
+empty. Don't try to convert into an already-in-use wiki!
 
 Basically, this software is rough, and could mess you up. Be careful.
 
@@ -761,10 +773,11 @@ This is very handy in helping you come up with a user map.
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Dave Rolsky.
+This software is Copyright (c) 2010 by Dave Rolsky.
 
-This is free software; you can redistribute it and/or modify it under
-the same terms as the Perl 5 programming language system itself.
+This is free software, licensed under:
+
+  The Artistic License 2.0
 
 =cut
 
