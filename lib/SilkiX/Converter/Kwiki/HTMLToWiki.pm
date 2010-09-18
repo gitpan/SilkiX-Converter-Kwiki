@@ -1,6 +1,6 @@
 package SilkiX::Converter::Kwiki::HTMLToWiki;
 BEGIN {
-  $SilkiX::Converter::Kwiki::HTMLToWiki::VERSION = '0.02';
+  $SilkiX::Converter::Kwiki::HTMLToWiki::VERSION = '0.03';
 }
 
 use strict;
@@ -134,7 +134,7 @@ SilkiX::Converter::Kwiki::HTMLToWiki - Custom HTML to wiki conversion to do conv
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 AUTHOR
 

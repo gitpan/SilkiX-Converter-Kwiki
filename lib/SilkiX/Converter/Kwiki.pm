@@ -1,6 +1,6 @@
 package SilkiX::Converter::Kwiki;
 BEGIN {
-  $SilkiX::Converter::Kwiki::VERSION = '0.02';
+  $SilkiX::Converter::Kwiki::VERSION = '0.03';
 }
 
 use strict;
@@ -346,21 +346,23 @@ sub _convert_user {
 
     $user = $self->_resolve_from_map($kwiki_user);
 
-    if ( $user && ! ref $user ) {
+    if ( $user && !ref $user ) {
         $kwiki_user = $user;
         undef $user;
     }
 
     if ($user) {
-        $self->_debug(
-            " ... found an explicit mapping to $user->{email_address}");
+        my $email
+            = blessed $user ? $user->email_address() : $user->{email_address};
+        $self->_debug(" ... found an explicit mapping to $email");
     }
     else {
         $self->_debug(' ... using implicit mapping');
     }
 
     $user ||= {};
-    for my $key (qw( email_address password display_name time_zone is_disabled )) {
+    for my $key (
+        qw( email_address password display_name time_zone is_disabled )) {
         next if exists $user->{$key};
 
         my $meth = '_default_' . $key . '_for_user';
@@ -368,7 +370,9 @@ sub _convert_user {
     }
 
     my $s_user
-        = Silki::Schema::User->new( email_address => $user->{email_address} );
+        = blessed $user
+        ? $user
+        : Silki::Schema::User->new( email_address => $user->{email_address} );
 
     if ($s_user) {
         $self->_debug(' ... found a user in the database');
@@ -653,7 +657,7 @@ SilkiX::Converter::Kwiki - Convert a Kwiki wiki to a Silki wiki
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
